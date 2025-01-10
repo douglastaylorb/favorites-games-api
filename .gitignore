@@ -1,0 +1,5 @@
+# Ignore arquivos relacionados às chaves de API
+.env
+
+#ignorar pasta postgres
+postgres-data
