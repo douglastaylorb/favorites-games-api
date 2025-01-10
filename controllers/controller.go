@@ -5,11 +5,20 @@ import (
 	"strconv"
 
 	"github.com/douglastaylorb/favorites-games-api/database"
+	_ "github.com/douglastaylorb/favorites-games-api/docs"
 	"github.com/douglastaylorb/favorites-games-api/models"
-
 	"github.com/gin-gonic/gin"
 )
 
+// @Summary Get all games
+// @Description Get a list of all games
+// @Tags games
+// @Produce json
+// @Param sort query string false "Sort field"
+// @Param order query string false "Sort order (asc or desc)"
+// @Success 200 {array} models.SwaggerGame
+// @Failure 500 {object} map[string]string
+// @Router /games [get]
 func GetGames(c *gin.Context) {
 	var games []models.Game
 	query := database.DB
