@@ -1,6 +1,8 @@
 package controllers
 
 import (
+	"encoding/csv"
+	"io"
 	"net/http"
 	"strconv"
 
@@ -58,6 +60,66 @@ func CreateGame(c *gin.Context) {
 	}
 	database.DB.Create(&game)
 	c.JSON(http.StatusCreated, game)
+}
+
+func CreateGamesBulk(c *gin.Context) {
+	file, _, err := c.Request.FormFile("file")
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Arquivo não enviado",
+		})
+		return
+	}
+	defer file.Close()
+
+	reader := csv.NewReader(file)
+	var games []models.Game
+
+	_, err = reader.Read()
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "Erro ao ler arquivo. Verifique seu arquivo CSV.",
+		})
+		return
+	}
+
+	for {
+		record, err := reader.Read()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			c.JSON(http.StatusBadRequest, gin.H{
+				"error": "Erro ao ler arquivo. Verifique seu arquivo CSV.",
+			})
+			return
+		}
+
+		anoLancamento, _ := strconv.Atoi(record[3])
+		nota, _ := strconv.Atoi(record[4])
+
+		game := models.Game{
+			Nome:          record[0],
+			Genero:        record[1],
+			Desenvolvedor: record[2],
+			AnoLancamento: anoLancamento,
+			Nota:          nota,
+			Descricao:     record[5],
+			Imagem:        record[6],
+		}
+		games = append(games, game)
+	}
+
+	result := database.DB.Create(&games)
+	if result.Error != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Erro ao salvar jogos no banco de dados",
+		})
+		return
+	}
+
+	c.JSON(http.StatusCreated, games)
+
 }
 
 func EditGame(c *gin.Context) {

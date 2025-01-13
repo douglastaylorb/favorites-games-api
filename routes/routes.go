@@ -24,6 +24,7 @@ func HandleRequests() {
 	r.GET("/games", controllers.GetGames)
 	r.GET("games/filter", controllers.GetGamesByFilter)
 	r.POST("/games", controllers.CreateGame)
+	r.POST("/games/bulk", controllers.CreateGamesBulk)
 	r.PUT("/games/:id", controllers.EditGame)
 	r.DELETE("/games/:id", controllers.DeleteGame)
 
