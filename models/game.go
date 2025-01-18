@@ -17,6 +17,7 @@ type Game struct {
 	Nota          int    `json:"nota"`
 	Descricao     string `json:"descricao"`
 	Imagem        string `json:"imagem"`
+	Status        string `json:"status"`
 	User          User   `json:"-" gorm:"foreignKey:UserID"`
 }
 

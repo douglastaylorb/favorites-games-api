@@ -31,3 +31,15 @@ func CreateUsersAndUpdateGames(db *gorm.DB) error {
 
 	return nil
 }
+
+func UpdateGamesAddStatus(db *gorm.DB) error {
+	err := db.Exec(`
+			ALTER TABLE games
+			ADD COLUMN status VARCHAR(50)
+	`).Error
+	if err != nil {
+		return err
+	}
+
+	return nil
+}

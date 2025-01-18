@@ -22,6 +22,15 @@ import (
 // @Success 200 {array} models.SwaggerGame
 // @Failure 500 {object} map[string]string
 // @Router /games [get]
+
+// Tipos de status de jogos do usuário
+var validStatuses = map[string]bool{
+	"Não jogado": true,
+	"Jogando":    true,
+	"Zerado":     true,
+	"Platinado":  true,
+}
+
 func GetGames(c *gin.Context) {
 	userID := c.MustGet("user_id").(uint)
 	var games []models.Game
@@ -57,6 +66,12 @@ func CreateGame(c *gin.Context) {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
 		return
 	}
+
+	if !validStatuses[game.Status] {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Status inválido"})
+		return
+	}
+
 	game.UserID = userID
 	if err := database.DB.Create(&game).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao criar jogo"})
@@ -104,8 +119,9 @@ func CreateGamesBulk(c *gin.Context) {
 			Desenvolvedor: record[2],
 			AnoLancamento: anoLancamento,
 			Nota:          nota,
-			Descricao:     record[5],
-			Imagem:        record[6],
+			Status:        record[5],
+			Descricao:     record[6],
+			Imagem:        record[7],
 		}
 		games = append(games, game)
 	}
@@ -131,6 +147,11 @@ func EditGame(c *gin.Context) {
 
 	if err := c.ShouldBindJSON(&game); err != nil {
 		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	if !validStatuses[game.Status] {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Status inválido"})
 		return
 	}
 
@@ -170,6 +191,12 @@ func GetGamesByFilter(c *gin.Context) {
 		rating, err := strconv.Atoi(notaMinima)
 		if err == nil {
 			query = query.Where("nota >= ?", rating)
+		}
+	}
+
+	if status := c.Query("status"); status != "" {
+		if _, ok := validStatuses[status]; ok {
+			query = query.Where("status = ?", status)
 		}
 	}
 
