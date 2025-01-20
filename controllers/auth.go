@@ -66,7 +66,7 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	log.Printf("Tentativa de login para o usuário: %s", input.Username)
+	// log.Printf("Tentativa de login para o usuário: %s", input.Username)
 
 	var user models.User
 	if err := database.DB.Where("username = ?", input.Username).First(&user).Error; err != nil {
@@ -75,9 +75,10 @@ func Login(c *gin.Context) {
 		return
 	}
 
-	log.Printf("Usuário encontrado: ID=%d, Username=%s", user.ID, user.Username)
-	log.Printf("Senha armazenada (hash): %s", user.Password)
-	log.Printf("Senha fornecida: %s", input.Password)
+	// logs para identificar erro na hora de comparar as senhas
+	// log.Printf("Usuário encontrado: ID=%d, Username=%s", user.ID, user.Username)
+	// log.Printf("Senha armazenada (hash): %s", user.Password)
+	// log.Printf("Senha fornecida: %s", input.Password)
 
 	if err := bcrypt.CompareHashAndPassword([]byte(user.Password), []byte(input.Password)); err != nil {
 		log.Printf("Erro na comparação de senhas: %v", err)

@@ -1,55 +1,116 @@
-# Favorite Games API
+# API de Jogos Favoritos
 
-This is a RESTful API for managing a collection of favorite games. It's built with Go, using Gin as the web framework and GORM for database operations.
+Este projeto é uma API RESTful para gerenciar jogos favoritos dos usuários. Ele fornece funcionalidades para registro de usuários, autenticação, e manipulação de dados de jogos. A API é construída usando Go, Gin Framework, e GORM para comunicação com um banco de dados PostgreSQL.
 
-## Features
 
-- List all games
-- Add a new game
-- Edit an existing game
-- Delete a game
-- Filter games by year and minimum rating
-- Sort games by name, rating, or release year
+## Funcionalidades
+
+- Registro de Usuários: Criação de novos usuários com validação de entrada.
+- Autenticação: Sistema de login com geração de token JWT.
+- Gerenciamento de Jogos: CRUD (Create, Read, Update, Delete) para jogos, incluindo filtragem e ordenação.
+- Status de Jogos: Atribuição de status aos jogos (Não jogado, Jogando, Zerado, Platinado).
+
+## Tecnologias Utilizadas
+
+- Go: Linguagem de programação utilizada para o desenvolvimento da API.
+- Gin Framework: Framework web para Go, utilizado para criar roteamentos e middleware.
+- GORM: ORM para Go, utilizado para interagir com o banco de dados PostgreSQL.
+- PostgreSQL: Sistema de gerenciamento de banco de dados relacional.
+- JWT: JSON Web Tokens para autenticação segura.
+- Docker: Para execução do banco de dados.
 
 ## Prerequisites
 
 - Go 1.16+
 - PostgreSQL
+- Configurar variáveis de ambiente no arquivo .env e docker-compose:
+
+  DB_HOST=localhost <br/>
+  DB_PORT=5432 <br/>
+  DB_USER=root <br/>
+  DB_PASSWORD=root <br/>
+  DB_NAME=root <br/>
+  JWT_SECRET_KEY=sua_secret_key
 
 ## Installation
 
-1. Clone the repository:
-git clone 
+1. **Clone o repositório:**
+  ```
+  git clone https://github.com/seu-usuario/seu-repositorio.git
+  cd seu-repositorio
+  ```
 
-github.com
-
-
-2. Navigate to the project directory:
-cd favorites-games-api
-
-
-3. Install dependencies:
-go mod tidy
+2. **Instale as dependências:**
+  ```
+  go mod tidy
+  ```
 
 
-4. Set up your environment variables in a `.env` file:
-DB_HOST=your_db_host DB_PORT=your_db_port DB_USER=your_db_user DB_PASSWORD=your_db_password DB_NAME=your_db_name
+3. **Configure o Banco de dados:**
+  - Execute o Docker compose.
 
 
-5. Run the application:
-go run main.go
+4. **Execute a aplicação:**
+  ```
+  go run main.go
+  ```
 
+## Uso
 
-The server will start on `http://localhost:8080`.
+**Rotas Principais**
+- Registro de Usuário: POST /auth/register
+- Login de Usuário: POST /auth/login
+- Listar Jogos: GET /api/games
+- Filtrar Jogos: GET /api/games/filter
+- Criar Jogo: POST /api/games
+- Editar Jogo: PUT /api/games/:id
+- Deletar Jogo: DELETE /api/games/:id
 
-## API Documentation
+**Exemplo de requisição para registro:**
 
-API documentation is available via Swagger UI at `http://localhost:8080/swagger/index.html` when the application is running.
+```
+POST /auth/register
+Content-Type: application/json
 
-## Endpoints
+{
+  "username": "exampleUser",
+  "email": "user@example.com",
+  "password": "securePassword"
+}
+```
 
-- `GET /games`: Get all games
-- `POST /games`: Create a new game
-- `PUT /games/:id`: Update a game
-- `DELETE /games/:id`: Delete a game
-- `GET /games/filter`: Filter games by year and minimum rating
+**Exemplo de requisição pra login:**
+```
+POST /auth/login
+Content-Type: application/json
+
+{
+  "username": "exampleUser",
+  "password": "securePassword"
+}
+```
+
+**Autenticação**
+
+- As rotas da API (exceto registro e login) requerem um token JWT.
+
+- Envie o token no cabeçalho de autorização:
+
+- Authorization: Bearer {token}
+
+## Contribuição
+
+1. Fork o projeto.
+2. Crie uma nova branch: 
+  ```
+  git checkout -b feature/nova-funcionalidade.
+  ```
+3. Faça suas alterações e commite:
+  ```
+  git commit -m 'Adiciona nova funcionalidade'.
+  ```
+4. Faça o push para a branch:
+  ```
+  git push origin feature/nova-funcionalidade.
+  ```
+5. Envie um Pull Request.

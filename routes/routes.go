@@ -3,8 +3,6 @@ package routes
 import (
 	"github.com/douglastaylorb/favorites-games-api/controllers"
 	middlewares "github.com/douglastaylorb/favorites-games-api/middleware"
-	swaggerFiles "github.com/swaggo/files"
-	ginSwagger "github.com/swaggo/gin-swagger"
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
@@ -39,8 +37,6 @@ func HandleRequests() {
 		api.PUT("/games/:id", controllers.EditGame)
 		api.DELETE("/games/:id", controllers.DeleteGame)
 	}
-
-	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 
 	r.Run(":8080")
 }

@@ -7,21 +7,9 @@ import (
 	"strconv"
 
 	"github.com/douglastaylorb/favorites-games-api/database"
-	_ "github.com/douglastaylorb/favorites-games-api/docs"
 	"github.com/douglastaylorb/favorites-games-api/models"
 	"github.com/gin-gonic/gin"
 )
-
-// GetGames retorna todos os jogos do usuário autenticado
-// @Summary Get all games
-// @Description Get a list of all games for the authenticated user
-// @Tags games
-// @Produce json
-// @Param sort query string false "Sort field"
-// @Param order query string false "Sort order (asc or desc)"
-// @Success 200 {array} models.SwaggerGame
-// @Failure 500 {object} map[string]string
-// @Router /games [get]
 
 // Tipos de status de jogos do usuário
 var validStatuses = map[string]bool{
@@ -29,6 +17,24 @@ var validStatuses = map[string]bool{
 	"Jogando":    true,
 	"Zerado":     true,
 	"Platinado":  true,
+}
+
+var validGenres = map[string]bool{
+	"Ação":          true,
+	"Aventura":      true,
+	"Corrida":       true,
+	"Esporte":       true,
+	"Estratégia":    true,
+	"Luta":          true,
+	"MMORPG":        true,
+	"Plataforma":    true,
+	"RPG":           true,
+	"Simulação":     true,
+	"Sobrevivência": true,
+	"Terror":        true,
+	"Tiro":          true,
+	"Ritmo":         true,
+	"Outro":         true,
 }
 
 func GetGames(c *gin.Context) {
@@ -72,6 +78,11 @@ func CreateGame(c *gin.Context) {
 		return
 	}
 
+	if !validGenres[game.Genero] {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Gênero inválido"})
+		return
+	}
+
 	game.UserID = userID
 	if err := database.DB.Create(&game).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao criar jogo"})
@@ -80,7 +91,7 @@ func CreateGame(c *gin.Context) {
 	c.JSON(http.StatusCreated, game)
 }
 
-// CreateGamesBulk cria múltiplos jogos a partir de um arquivo CSV
+// cria múltiplos jogos a partir de um arquivo CSV
 func CreateGamesBulk(c *gin.Context) {
 	userID := c.MustGet("user_id").(uint)
 	file, _, err := c.Request.FormFile("file")
@@ -155,6 +166,11 @@ func EditGame(c *gin.Context) {
 		return
 	}
 
+	if !validGenres[game.Genero] {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Gênero inválido"})
+		return
+	}
+
 	if err := database.DB.Save(&game).Error; err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Erro ao atualizar jogo"})
 		return
@@ -177,7 +193,7 @@ func DeleteGame(c *gin.Context) {
 	c.JSON(http.StatusNoContent, gin.H{"message": "Jogo deletado com sucesso"})
 }
 
-// GetGamesByFilter retorna jogos filtrados por ano e/ou nota mínima
+// GetGamesByFilter retorna jogos filtrados por ano e/ou nota mínima e/ou status
 func GetGamesByFilter(c *gin.Context) {
 	userID := c.MustGet("user_id").(uint)
 	var games []models.Game
