@@ -25,6 +25,8 @@ func HandleRequests() {
 	{
 		auth.POST("/register", controllers.Register)
 		auth.POST("/login", controllers.Login)
+		auth.POST("/forgot-password", controllers.ForgotPassword)
+		auth.POST("/reset-password", controllers.ResetPassword)
 	}
 
 	api := r.Group("/api")
